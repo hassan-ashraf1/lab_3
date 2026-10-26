@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Your tasks{% endblock %}
+{% block content %}
+<header class="topbar">
+  <a class="wordmark" href="{{ url_for('todos') }}"><span class="mini-mark">✓</span> taskly</a>
+  <div class="user-area"><span class="hello">Hi, {{ session.get('name', 'there') }}</span>
+    <form method="post" action="{{ url_for('logout') }}"><button class="quiet-button" type="submit">Log out ↗</button></form>
+  </div>
+</header>
+<section class="todo-content">
+  <p class="eyebrow">YOUR PERSONAL SPACE</p>
+  <div class="heading-row"><div><h1>To-do list<span class="period">.</span></h1><p class="muted">One thing at a time. You've got this.</p></div>
+    <div class="count-pill">{{ items|length }} task{% if items|length != 1 %}s{% endif %}</div>
+  </div>
+  <form class="add-form" method="post" action="{{ url_for('add_todo') }}" id="add-form" novalidate>
+    <span class="plus">＋</span>
+    <input name="title" id="new-title" maxlength="201" placeholder="What needs to be done?" aria-label="New task">
+    <button class="primary" type="submit">Add task</button>
+  </form>
+  <div class="task-list">
+    {% for item in items %}
+    <article class="task-card {% if item.is_done %}is-done{% endif %}">
+      <form method="post" action="{{ url_for('toggle_todo', todo_id=item.todo_id) }}" class="check-form">
+        <input type="hidden" name="is_done" value="{{ 0 if item.is_done else 1 }}">
+        <button class="check-button" type="submit" aria-label="{% if item.is_done %}Mark not done{% else %}Mark done{% endif %}">{% if item.is_done %}✓{% endif %}</button>
+      </form>
+      <form method="post" action="{{ url_for('edit_todo', todo_id=item.todo_id) }}" class="edit-form">
+        <input name="title" value="{{ item.title }}" maxlength="201" aria-label="Edit task title">
+        <button class="text-button" type="submit">Save</button>
+      </form>
+      <form method="post" action="{{ url_for('delete_todo', todo_id=item.todo_id) }}" onsubmit="return confirm('Are you sure you want to delete this task?');">
+        <button class="delete-button" type="submit" aria-label="Delete task">×</button>
+      </form>
+    </article>
+    {% else %}
+    <div class="empty-state"><div class="empty-icon">✦</div><h3>A fresh start.</h3><p>Your list is clear. Add a task above to get going.</p></div>
+    {% endfor %}
+  </div>
+  {% if items %}
+  <p class="list-note">Tip: check off a task when it's done. Small wins count.</p>
+  {% endif %}
+</section>
+<script>
+document.getElementById('add-form').addEventListener('submit', function(e) {
+  const title = document.getElementById('new-title').value.trim();
+  if (!title) { e.preventDefault(); alert('Title is required'); }
+  else if (title.length > 200) { e.preventDefault(); alert('Title is too long (200 characters at most)'); }
+});
+</script>
+{% endblock %}

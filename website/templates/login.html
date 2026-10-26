@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Log in{% endblock %}
+{% block content %}
+<section class="auth-layout">
+  <div class="brand-panel">
+    <div class="brand-mark">✓</div>
+    <p class="eyebrow">A LITTLE MORE FOCUS</p>
+    <h1>Make room for what matters.</h1>
+    <p class="muted light">Your plans, in one calm and simple place.</p>
+    <div class="decorative-checks"><span>✓</span><span>✓</span><span>✓</span></div>
+  </div>
+  <div class="form-panel">
+    <p class="eyebrow">WELCOME BACK</p>
+    <h2>Log in</h2>
+    <p class="muted">Pick up where you left off.</p>
+    {% if errors %}
+    <div class="errors" role="alert">{% for error in errors %}<p>{{ error }}</p>{% endfor %}</div>
+    {% endif %}
+    <form method="post" action="{{ url_for('login') }}" id="login-form" novalidate>
+      <label for="email">Email address</label>
+      <input id="email" name="email" type="email" autocomplete="email" value="{{ email }}" placeholder="you@example.com">
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Your password">
+      <button class="primary full" type="submit">Log in <span>→</span></button>
+    </form>
+    <p class="switch-auth">New here? <a href="{{ url_for('register') }}">Create an account</a></p>
+  </div>
+</section>
+<script>
+document.getElementById('login-form').addEventListener('submit', function(e) {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const errors = [];
+  if (!email) errors.push('Email is required');
+  if (!password) errors.push('Password is required');
+  if (errors.length) { e.preventDefault(); alert(errors.join('\\n')); }
+});
+</script>
+{% endblock %}
